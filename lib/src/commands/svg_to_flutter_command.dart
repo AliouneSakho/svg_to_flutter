@@ -16,18 +16,9 @@ import '../templates/package_json_template.dart';
 class SvgToFlutterCommand extends Command<int> {
   /// constructor
   SvgToFlutterCommand() {
-    argParser.addOption(
-      svgInputDir,
-      help: 'Input your svg file path',
-    );
-    argParser.addOption(
-      fontOutputDir,
-      help: 'Output your fonts dir path',
-    );
-    argParser.addOption(
-      iconsOutputDir,
-      help: 'Flutter icons output dir',
-    );
+    argParser.addOption(svgInputDir, help: 'Input your svg file path');
+    argParser.addOption(fontOutputDir, help: 'Output your fonts dir path');
+    argParser.addOption(iconsOutputDir, help: 'Flutter icons output dir');
     argParser.addOption(
       iconsClassName,
       defaultsTo: defaultIconsClassName,
@@ -53,15 +44,11 @@ class SvgToFlutterCommand extends Command<int> {
 
   void _handleArguments() {
     if (argResults![svgInputDir] == null) {
-      throw const SvgToFlutterUsageException(
-        'Svg files path not found',
-      );
+      throw const SvgToFlutterUsageException('Svg files path not found');
     }
 
     if (argResults![fontOutputDir] == null) {
-      throw const SvgToFlutterUsageException(
-        'Output your fonts dir not found',
-      );
+      throw const SvgToFlutterUsageException('Output your fonts dir not found');
     }
 
     if (argResults![iconsOutputDir] == null) {
@@ -72,11 +59,9 @@ class SvgToFlutterCommand extends Command<int> {
   }
 
   Future<void> _judgeNodeEnvironment() async {
-    final ProcessResult result = await Process.run(
-      'node',
-      <String>['--version'],
-      runInShell: true,
-    );
+    final ProcessResult result = await Process.run('node', <String>[
+      '--version',
+    ], runInShell: true);
 
     if (result.exitCode != 0) {
       throw const SvgToFlutterException(
@@ -113,8 +98,9 @@ class SvgToFlutterCommand extends Command<int> {
   }
 
   Future<void> _generateIconfont() async {
-    final Directory outputDir =
-        Directory(path.join(rootDirector.path, tempOutputDir));
+    final Directory outputDir = Directory(
+      path.join(rootDirector.path, tempOutputDir),
+    );
 
     if (outputDir.existsSync()) {
       await outputDir.delete(recursive: true);
@@ -151,14 +137,10 @@ class SvgToFlutterCommand extends Command<int> {
           }),
         );
 
-        throw const SvgToFlutterException(
-          'generate iconfont is Failed!',
-        );
+        throw const SvgToFlutterException('generate iconfont is Failed!');
       }
     } catch (e) {
-      throw const SvgToFlutterException(
-        'generate iconfont is Failed!',
-      );
+      throw const SvgToFlutterException('generate iconfont is Failed!');
     }
   }
 
@@ -167,15 +149,12 @@ class SvgToFlutterCommand extends Command<int> {
         argResults![iconsClassName] ?? defaultIconsClassName;
     final String? fontPackage = argResults![iconsPackageName];
 
-    final File iconfontsFile = File.fromUri(
-      rootDirector.uri.resolve(
-        path.join(
-          rootDirector.path,
-          tempOutputDir,
-          '$className.json',
-        ),
-      ),
+    final String iconfontsPath = path.join(
+      rootDirector.path,
+      tempOutputDir,
+      '$className.json',
     );
+    final File iconfontsFile = File(iconfontsPath);
 
     final Map<String, dynamic> icons = jsonDecode(
       await iconfontsFile.readAsString(),
@@ -204,10 +183,7 @@ class SvgToFlutterCommand extends Command<int> {
 
     /// Create if the iconsClassName folder does not exist
     final Directory classFileDir = Directory(
-      path.join(
-        path.current,
-        argResults![iconsOutputDir],
-      ),
+      path.join(path.current, argResults![iconsOutputDir]),
     );
     if (!classFileDir.existsSync()) {
       await classFileDir.create(recursive: true);
@@ -227,10 +203,7 @@ class SvgToFlutterCommand extends Command<int> {
 
     /// Create if the fontOutputDir folder does not exist
     final Directory fontFileDir = Directory(
-      path.join(
-        path.current,
-        argResults![fontOutputDir],
-      ),
+      path.join(path.current, argResults![fontOutputDir]),
     );
     if (!fontFileDir.existsSync()) {
       await fontFileDir.create(recursive: true);
@@ -254,8 +227,9 @@ class SvgToFlutterCommand extends Command<int> {
     dir.delete(recursive: true);
     // if deleteInput is false, delete input svg
     if (argResults![deleteInput]) {
-      final Directory soureFileDir =
-          Directory(path.join(rootDirector.path, argResults![svgInputDir]));
+      final Directory soureFileDir = Directory(
+        path.join(rootDirector.path, argResults![svgInputDir]),
+      );
       if (soureFileDir.existsSync()) {
         await soureFileDir.delete();
       }
